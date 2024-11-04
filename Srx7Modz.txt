@@ -1,1 +1,241 @@
--- Carregar biblioteca Orion local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()  -- PlaceId do jogo "The Strongest Battlegrounds" local targetPlaceId = 10449761463   -- Criar a janela principal do ScriptHub local Window = OrionLib:MakeWindow({     Name = "Srx7 Modz - The Strongest Battlegrounds",     HidePremium = false,     IntroEnabled = true,     IntroText = "Bem-vindo ao ScriptHub",     SaveConfig = true,     ConfigFolder = "ScriptHubConfigs" })  -- Verifica se o jogo é o correto if game.PlaceId ~= targetPlaceId then     OrionLib:MakeNotification({         Name = "Erro",         Content = "Este script só pode ser executado no jogo correto!",         Time = 5     })     return end  -- Tabela de funções com segurança local functionSafety = {     AutoFarm = "Safe",     GodMode = "Safe",     AimLock = "Danger",     Speed = "Safe",     ESP = "Danger",     CopyOutfit = "Safe", }  -- Função para verificar a segurança da função local function checkFunctionSafety(functionName)     local safetyStatus = functionSafety[functionName] or "Unknown"     OrionLib:MakeNotification({         Name = "Segurança da Função",         Content = functionName .. " é classificada como: " .. safetyStatus,         Time = 5     }) end  -- Configuração de Tabelas e Variáveis local Settings = {     AutoFarm = false,     GodMode = false,     Speed = 16,     AimLockEnabled = false,     TargetPlayer = nil,     ESPColor = Color3.fromRGB(255, 0, 0), -- Cor padrão do ESP     ESPType = "Line", -- Tipo de ESP padrão }  -- Função de AutoFarm local function AutoFarm()     while Settings.AutoFarm do         -- Código de AutoFarm         wait(1)     end end  -- Função de GodMode local function ToggleGodMode()     local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")     if humanoid then         if Settings.GodMode then             humanoid.MaxHealth = math.huge             humanoid.Health = math.huge         else             humanoid.MaxHealth = 100             humanoid.Health = 100         end     end end  -- Lógica do AimLock local function AimLock()     if Settings.AimLockEnabled and Settings.TargetPlayer then         local player = game.Players:FindFirstChild(Settings.TargetPlayer)         if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then             local targetPosition = player.Character.HumanoidRootPart.Position             local localPlayer = game.Players.LocalPlayer.Character             if localPlayer and localPlayer:FindFirstChild("HumanoidRootPart") then                 localPlayer.HumanoidRootPart.CFrame = CFrame.new(targetPosition) -- Mover para a posição do alvo                 ActivateESP(player) -- Ativar ESP para o alvo             end         end     end end  -- Função para ativar o ESP local function ActivateESP(player)     if player and player.Character then         local espPart = Instance.new("BoxHandleAdornment")         espPart.Size = Vector3.new(4, 6, 4) -- Tamanho do box ESP         espPart.Adornee = player.Character:FindFirstChild("HumanoidRootPart")         espPart.Color3 = Settings.ESPColor         espPart.Transparency = 0.5         espPart.AlwaysOnTop = true          if Settings.ESPType == "Line" then             local line = Instance.new("LineHandleAdornment")             line.Adornee = localPlayer.Character.HumanoidRootPart             line.Length = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).magnitude             line.Color3 = Settings.ESPColor             line.Transparency = 0.5             line.AlwaysOnTop = true             line.Parent = game.Workspace         end          espPart.Parent = game.Workspace     end end  -- Seção de Exploits local exploitsTab = Window:MakeTab({     Name = "Exploits",     Icon = "rbxassetid://4483345998",     PremiumOnly = false })  -- AutoFarm Toggle exploitsTab:AddToggle({     Name = "AutoFarm",     Default = false,     Callback = function(Value)         Settings.AutoFarm = Value         checkFunctionSafety("AutoFarm")         if Value then             AutoFarm()         end     end })  -- GodMode Toggle exploitsTab:AddToggle({     Name = "GodMode",     Default = false,     Callback = function(Value)         Settings.GodMode = Value         checkFunctionSafety("GodMode")         ToggleGodMode()     end })  -- Velocidade Slider exploitsTab:AddSlider({     Name = "Velocidade",     Min = 16,     Max = 100,     Default = 16,     Color = Color3.fromRGB(255, 255, 255),     Increment = 1,     Callback = function(Value)         Settings.Speed = Value         checkFunctionSafety("Speed")         if game.Players.LocalPlayer.Character then             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value         end     end })  -- AimLock Toggle exploitsTab:AddToggle({     Name = "AimLock",     Default = false,     Callback = function(Value)         Settings.AimLockEnabled = Value         checkFunctionSafety("AimLock")         while Settings.AimLockEnabled do             AimLock()             wait(0.1) -- Verifica a cada 0.1 segundo         end     end })  -- Escolha da Cor do ESP exploitsTab:AddColorPicker({     Name = "Cor do ESP",     Default = Color3.fromRGB(255, 0, 0),     Callback = function(Color)         Settings.ESPColor = Color     end })  -- Escolha do Tipo de ESP exploitsTab:AddDropdown({     Name = "Tipo de ESP",     Default = "Line",     Options = {"Holograma", "Linha"},     Callback = function(Value)         Settings.ESPType = Value     end })  -- Função para copiar roupas de um jogador exploitsTab:AddTextbox({     Name = "Nome do Jogador (Copiar Roupas)",     Default = "",     TextDisappear = true,     Callback = function(PlayerName)         checkFunctionSafety("CopyOutfit")         local player = game.Players:FindFirstChild(PlayerName)         if player then             local character = player.Character             if character then                 -- Copiar a roupa do jogador                 for _, item in ipairs(character:GetChildren()) do                     if item:IsA("Shirt") or item:IsA("Pants") then                         local clone = item:Clone()                         clone.Parent = game.Players.LocalPlayer.Character                     end                 end                 OrionLib:MakeNotification({                     Name = "Sucesso",                     Content = "Roupas copiadas com sucesso!",                     Time = 5                 })             else                 OrionLib:MakeNotification({                     Name = "Erro",                     Content = "Jogador não encontrado ou não possui um personagem.",                     Time = 5                 })             end         else             OrionLib:MakeNotification({                 Name = "Erro",                 Content = "Jogador não encontrado.",                 Time = 5             })         end     end })  -- Inicializa OrionLib OrionLib:Init()
+-- Carregar biblioteca Orion
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+
+-- PlaceId do jogo "The Strongest Battlegrounds"
+local targetPlaceId = 10449761463 
+
+-- Criar a janela principal do ScriptHub
+local Window = OrionLib:MakeWindow({
+    Name = "Srx7 Modz - The Strongest Battlegrounds",
+    HidePremium = false,
+    IntroEnabled = true,
+    IntroText = "Bem-vindo ao ScriptHub",
+    SaveConfig = true,
+    ConfigFolder = "ScriptHubConfigs"
+})
+
+-- Verifica se o jogo é o correto
+if game.PlaceId ~= targetPlaceId then
+    OrionLib:MakeNotification({
+        Name = "Erro",
+        Content = "Este script só pode ser executado no jogo correto!",
+        Time = 5
+    })
+    return
+end
+
+-- Tabela de funções com segurança
+local functionSafety = {
+    AutoFarm = "Safe",
+    GodMode = "Safe",
+    AimLock = "Danger",
+    Speed = "Safe",
+    ESP = "Danger",
+    CopyOutfit = "Safe",
+}
+
+-- Função para verificar a segurança da função
+local function checkFunctionSafety(functionName)
+    local safetyStatus = functionSafety[functionName] or "Unknown"
+    OrionLib:MakeNotification({
+        Name = "Segurança da Função",
+        Content = functionName .. " é classificada como: " .. safetyStatus,
+        Time = 5
+    })
+end
+
+-- Configuração de Tabelas e Variáveis
+local Settings = {
+    AutoFarm = false,
+    GodMode = false,
+    Speed = 16,
+    AimLockEnabled = false,
+    TargetPlayer = nil,
+    ESPColor = Color3.fromRGB(255, 0, 0), -- Cor padrão do ESP
+    ESPType = "Line", -- Tipo de ESP padrão
+}
+
+-- Função de AutoFarm
+local function AutoFarm()
+    while Settings.AutoFarm do
+        -- Código de AutoFarm
+        wait(1)
+    end
+end
+
+-- Função de GodMode
+local function ToggleGodMode()
+    local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+    if humanoid then
+        if Settings.GodMode then
+            humanoid.MaxHealth = math.huge
+            humanoid.Health = math.huge
+        else
+            humanoid.MaxHealth = 100
+            humanoid.Health = 100
+        end
+    end
+end
+
+-- Lógica do AimLock
+local function AimLock()
+    if Settings.AimLockEnabled and Settings.TargetPlayer then
+        local player = game.Players:FindFirstChild(Settings.TargetPlayer)
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local targetPosition = player.Character.HumanoidRootPart.Position
+            local localPlayer = game.Players.LocalPlayer.Character
+            if localPlayer and localPlayer:FindFirstChild("HumanoidRootPart") then
+                localPlayer.HumanoidRootPart.CFrame = CFrame.new(targetPosition) -- Mover para a posição do alvo
+                ActivateESP(player) -- Ativar ESP para o alvo
+            end
+        end
+    end
+end
+
+-- Função para ativar o ESP
+local function ActivateESP(player)
+    if player and player.Character then
+        local espPart = Instance.new("BoxHandleAdornment")
+        espPart.Size = Vector3.new(4, 6, 4) -- Tamanho do box ESP
+        espPart.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+        espPart.Color3 = Settings.ESPColor
+        espPart.Transparency = 0.5
+        espPart.AlwaysOnTop = true
+
+        if Settings.ESPType == "Line" then
+            local line = Instance.new("LineHandleAdornment")
+            line.Adornee = localPlayer.Character.HumanoidRootPart
+            line.Length = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).magnitude
+            line.Color3 = Settings.ESPColor
+            line.Transparency = 0.5
+            line.AlwaysOnTop = true
+            line.Parent = game.Workspace
+        end
+
+        espPart.Parent = game.Workspace
+    end
+end
+
+-- Seção de Exploits
+local exploitsTab = Window:MakeTab({
+    Name = "Exploits",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- AutoFarm Toggle
+exploitsTab:AddToggle({
+    Name = "AutoFarm",
+    Default = false,
+    Callback = function(Value)
+        Settings.AutoFarm = Value
+        checkFunctionSafety("AutoFarm")
+        if Value then
+            AutoFarm()
+        end
+    end
+})
+
+-- GodMode Toggle
+exploitsTab:AddToggle({
+    Name = "GodMode",
+    Default = false,
+    Callback = function(Value)
+        Settings.GodMode = Value
+        checkFunctionSafety("GodMode")
+        ToggleGodMode()
+    end
+})
+
+-- Velocidade Slider
+exploitsTab:AddSlider({
+    Name = "Velocidade",
+    Min = 16,
+    Max = 100,
+    Default = 16,
+    Color = Color3.fromRGB(255, 255, 255),
+    Increment = 1,
+    Callback = function(Value)
+        Settings.Speed = Value
+        checkFunctionSafety("Speed")
+        if game.Players.LocalPlayer.Character then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+-- AimLock Toggle
+exploitsTab:AddToggle({
+    Name = "AimLock",
+    Default = false,
+    Callback = function(Value)
+        Settings.AimLockEnabled = Value
+        checkFunctionSafety("AimLock")
+        while Settings.AimLockEnabled do
+            AimLock()
+            wait(0.1) -- Verifica a cada 0.1 segundo
+        end
+    end
+})
+
+-- Escolha da Cor do ESP
+exploitsTab:AddColorPicker({
+    Name = "Cor do ESP",
+    Default = Color3.fromRGB(255, 0, 0),
+    Callback = function(Color)
+        Settings.ESPColor = Color
+    end
+})
+
+-- Escolha do Tipo de ESP
+exploitsTab:AddDropdown({
+    Name = "Tipo de ESP",
+    Default = "Line",
+    Options = {"Holograma", "Linha"},
+    Callback = function(Value)
+        Settings.ESPType = Value
+    end
+})
+
+-- Função para copiar roupas de um jogador
+exploitsTab:AddTextbox({
+    Name = "Nome do Jogador (Copiar Roupas)",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(PlayerName)
+        checkFunctionSafety("CopyOutfit")
+        local player = game.Players:FindFirstChild(PlayerName)
+        if player then
+            local character = player.Character
+            if character then
+                -- Copiar a roupa do jogador
+                for _, item in ipairs(character:GetChildren()) do
+                    if item:IsA("Shirt") or item:IsA("Pants") then
+                        local clone = item:Clone()
+                        clone.Parent = game.Players.LocalPlayer.Character
+                    end
+                end
+                OrionLib:MakeNotification({
+                    Name = "Sucesso",
+                    Content = "Roupas copiadas com sucesso!",
+                    Time = 5
+                })
+            else
+                OrionLib:MakeNotification({
+                    Name = "Erro",
+                    Content = "Jogador não encontrado ou não possui um personagem.",
+                    Time = 5
+                })
+            end
+        else
+            OrionLib:MakeNotification({
+                Name = "Erro",
+                Content = "Jogador não encontrado.",
+                Time = 5
+            })
+        end
+    end
+})
+
+-- Inicializa OrionLib
+OrionLib:Init()
